@@ -7,6 +7,7 @@ export class CharacterComponent {
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private object!: Phaser.Physics.Arcade.StaticGroup;
   private player!: Phaser.Physics.Arcade.Sprite;
+  private currentPlayer: Phaser.Physics.Arcade.Sprite;
 
   constructor(room: Room,cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys ) {
     this.room = room;
@@ -25,21 +26,31 @@ export class CharacterComponent {
       entity.anims.play('idle_down', true);
       player.animeState="idle_down";
 
+      if(isCurrentPlayer){
+        this.currentPlayer=entity;
+      }
+
       this.object = scene.physics.add.staticGroup();
       const machine = this.object.create(200,200,'machine');
       machine.setSize(48,64);
 
       scene.physics.add.collider(entity,machine,()=>{
-        console.log("working");
+        
         
       });
 
 
+
+
       player.onChange(() => { //플레이어 이동좌표 애니메이션 갱신하는부분
         
-        
-        entity.x = player.x;
-        entity.y = player.y;
+
+
+        if(sessionId!==this.room.sessionId)
+        {
+          entity.x = player.x;
+          entity.y = player.y;
+        }
 
         // 움직임이 없을 때 애니메이션 중지
         if (player.velX === 0 && player.velY === 0) {
@@ -47,7 +58,7 @@ export class CharacterComponent {
         } else { // 움직임이 있을 때만 애니메이션 실행
           entity.anims.play(player.animeState, true);
         }
-        console.log(sessionId)
+        
       });
 
 
@@ -67,8 +78,27 @@ export class CharacterComponent {
 
   
   update(){
-   
+   if(this.currentPlayer){
+    if(this.cursorKeys.left.isDown){
+      this.currentPlayer.setVelocityX(-200);
+    }else if(this.cursorKeys.right.isDown){
+      this.currentPlayer.setVelocityX(200);
+    }else{
+      this.currentPlayer.setVelocityX(0);
+    }
 
+    if(this.cursorKeys.up.isDown){
+      this.currentPlayer.setVelocityY(-200);
+    }else if(this.cursorKeys.down.isDown){
+      this.currentPlayer.setVelocityY(200);
+    }else{
+      this.currentPlayer.setVelocityY(0);
+    }
+    
+    this.room.send(1, { xc: this.currentPlayer.x, yc: this.currentPlayer.y });
+   }
+    
+    
 
   }
 
