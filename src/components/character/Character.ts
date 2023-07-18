@@ -19,14 +19,14 @@ export class CharacterComponent {
     this.room.state.players.onAdd((player, sessionId) => {
       console.log("A player has joined! Their unique session id is", sessionId);
 
-      var isCurrentPlayer = sessionId === this.room.sessionId;
+      var isCurrentPlayer = sessionId === this.room.sessionId; //현재 플레이어가 내플레이어인지 확인
 
       const entity = scene.physics.add.sprite(player.x, player.y, "character",'Adam_idle_anim_21.png');
       this.playerEntities[sessionId] = entity;
       entity.anims.play('idle_down', true);
       player.animeState="idle_down";
 
-      if(isCurrentPlayer){
+      if(isCurrentPlayer){    //현재플레이어가 내플레이어일경우 currentplayer에 저장함
         this.currentPlayer=entity;
       }
 
@@ -35,19 +35,13 @@ export class CharacterComponent {
       machine.setSize(48,64);
 
       scene.physics.add.collider(entity,machine,()=>{
-        
-        
+           
       });
 
-
-
-
-      player.onChange(() => { //플레이어 이동좌표 애니메이션 갱신하는부분
+      player.onChange(() => { //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
         
-
-
-        if(sessionId!==this.room.sessionId)
-        {
+        if(sessionId!==this.room.sessionId) //내플레이어가 아닌 다른플레이어들의 좌표만 업데이트함
+        {                                   //내플레이어의 움직임은 update()부분에서 구현함
           entity.x = player.x;
           entity.y = player.y;
         }
@@ -77,8 +71,10 @@ export class CharacterComponent {
   }
 
   
-  update(){
+  update(){ //update안의 내용은 매프레임마다 실행됨
+
    if(this.currentPlayer){
+    //내플레이어 조작 구현
     if(this.cursorKeys.left.isDown){
       this.currentPlayer.setVelocityX(-200);
     }else if(this.cursorKeys.right.isDown){
@@ -94,7 +90,8 @@ export class CharacterComponent {
     }else{
       this.currentPlayer.setVelocityY(0);
     }
-    
+
+    //내플레이어의 좌표정보를 서버로보냄
     this.room.send(1, { xc: this.currentPlayer.x, yc: this.currentPlayer.y });
    }
     
