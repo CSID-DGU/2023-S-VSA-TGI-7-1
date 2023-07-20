@@ -8,6 +8,7 @@ import { ChatComponent } from './components/chat/Chat';
 import { KeyboardComponent } from './components/keyboard/Keyboard';
 import { createAnimations } from './components/anims/anims';
 import { MachineComponent } from './components/items/machine';
+import png_bubble from '/public/speechBubble.png'
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -27,7 +28,9 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('machine', png_machine, {
       frameWidth: 64,
       frameHeight: 64,
+      
     });
+    this.load.image('speechBubble', png_bubble);
   }
 
   async create() {

@@ -36,8 +36,20 @@ export class CharacterComponent {
       const machine = this.object.create(200,200,'machine');
       machine.setSize(48,64);
 
+      const speechBubble = scene.add.sprite(0, 0, 'speechBubble');
+      speechBubble.setVisible(false); // 일단 말풍선을 보이지 않게함
+      speechBubble.setScale(90 / speechBubble.width, 90 / speechBubble.height);
+
+
       scene.physics.add.collider(entity,machine,()=>{
-           
+        if (!entity.body.touching.none && !machine.body.touching.none) {
+          // character와 machine이 접촉 중인 경우에만 실행
+          speechBubble.setPosition(machine.x, machine.y - machine.height);
+          speechBubble.setVisible(true); // character와 machine이 충돌할 때 말풍선 표시
+          setTimeout(() => {
+              speechBubble.setVisible(false);
+          }, 1000);
+          }
       });
 
       player.onChange(() => { //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
@@ -47,6 +59,8 @@ export class CharacterComponent {
           entity.x = player.x;
           entity.y = player.y;
         }
+
+
 
         // 움직임이 없을 때 애니메이션 중지
         if (player.velX === 0 && player.velY === 0) {
