@@ -8,6 +8,7 @@ export class CharacterComponent {
   private object!: Phaser.Physics.Arcade.StaticGroup;
   private player!: Phaser.Physics.Arcade.Sprite;
   private currentPlayer: Phaser.Physics.Arcade.Sprite;
+  private cameraScene: Phaser.Scene;
 
   constructor(room: Room,cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys ) {
     this.room = room;
@@ -29,6 +30,7 @@ export class CharacterComponent {
       if(isCurrentPlayer){    //현재플레이어가 내플레이어일경우 currentplayer에 저장함
         this.currentPlayer=entity;
       }
+      this.cameraScene = scene;
 
       this.object = scene.physics.add.staticGroup();
       const machine = this.object.create(200,200,'machine');
@@ -75,6 +77,7 @@ export class CharacterComponent {
 
    if(this.currentPlayer){
     //내플레이어 조작 구현
+    this.cameraScene.cameras.main.startFollow(this.currentPlayer, true)
     if(this.cursorKeys.left.isDown){
       this.currentPlayer.setVelocityX(-200);
     }else if(this.cursorKeys.right.isDown){

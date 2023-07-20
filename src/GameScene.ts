@@ -51,6 +51,9 @@ export class GameScene extends Phaser.Scene {
       this.chatComponent.initialize(this);
       this.characterComponent.initialize(this);
       this.machineComponent.initialize(this);
+
+      this.cameras.main.zoom = 1.5
+      
     } catch (e) {
       console.error(e);
     }
