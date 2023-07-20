@@ -1,47 +1,93 @@
-import { Room } from "colyseus.js";
+import { Room } from 'colyseus.js';
 
 export class ChatComponent {
   private room: Room;
   private chatMessages: string[] = [];
-  private chatInput: string = "";
+  private chatInput: string = '';
   private text: Phaser.GameObjects.Text;
   private chatMode: boolean;
+  private scene: Phaser.Scene;
 
   constructor(room: Room) {
     this.room = room;
   }
 
   initialize(scene: Phaser.Scene) {
-    this.text = scene.add.text(0, 600 - 200, "", {
-      color: "black",
-      wordWrap: { width: 300 },
-    });
+    this.scene = scene;
+    const viewportWidth = this.scene.cameras.main.width;
+    const desiredWidth = viewportWidth * 0.4;
 
-    this.room.onMessage("chat", (message) => {
+    this.text = this.scene.add
+      .text(0, 0, '', {
+        color: 'black',
+        backgroundColor: 'white',
+        fixedWidth: desiredWidth,
+        fixedHeight: '100',
+        wordWrap: { width: desiredWidth },
+        lineSpacing: '1.4',
+        fontSize: '15px',
+      })
+      .setScrollFactor(0)
+      .setDepth(2);
+
+    this.room.onMessage('chat', (message) => {
       this.chatMessages.push(`${message.id}: ${message.message}`);
       this.updateChatText();
       console.log(`${message.id}: ${message.message}`);
     });
+
     this.chatMode = false;
-      scene.input.keyboard.on("keydown", (event: KeyboardEvent) => {
-        if (event.key === "Enter") {
-          let chatInput = document.getElementById(
-            "chat-input"
-          ) as HTMLInputElement;
-          // Toggle chat input visibility
-          if (chatInput.style.display === "none") {
-            chatInput.style.display = "block";
-            chatInput.focus();
-          } else {
-            this.room.send("chat", chatInput.value);
-            chatInput.value = "";
-            chatInput.style.display = "none";
+
+    scene.input.keyboard.on('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        let chatInput = document.getElementById(
+          'chat-input'
+        ) as HTMLInputElement;
+        // Toggle chat input visibility
+        if (chatInput.style.display === 'none') {
+          chatInput.style.display = 'block';
+          chatInput.focus();
+        } else {
+          if (chatInput.value.trim() !== '') {
+            this.room.send('chat', chatInput.value);
           }
+          chatInput.value = '';
+          chatInput.style.display = 'none';
+          this.chatInput = '';
         }
-      });
+      } else if (event.key === ' ') {
+        let chatInput = document.getElementById(
+          'chat-input'
+        ) as HTMLInputElement;
+        chatInput.value += ' ';
+        this.chatInput = chatInput.value;
+        this.updateChatText();
+      } else {
+        let chatInput = document.getElementById(
+          'chat-input'
+        ) as HTMLInputElement;
+        this.chatInput = chatInput.value;
+        this.updateChatText();
+      }
+    });
+
+    let chatInput = document.getElementById('chat-input') as HTMLInputElement;
+    chatInput.style.display = 'none';
+
+    this.updateChatText();
   }
 
   updateChatText() {
-    this.text.setText([...this.chatMessages.slice(-10), "> " + this.chatInput].join("\n"));
+    const viewportWidth = this.scene.cameras.main.width;
+    const viewportHeight = this.scene.cameras.main.height;
+    const textX = viewportWidth / 2;
+    const textY = viewportHeight - 220;
+
+    this.text.setPosition(textX, textY);
+    this.text.setOrigin(0.5);
+
+    this.text.setText(
+      [...this.chatMessages.slice(-5), this.chatInput].join('\n')
+    );
   }
 }
