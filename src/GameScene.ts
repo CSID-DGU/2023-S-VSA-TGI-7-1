@@ -10,6 +10,10 @@ import { createAnimations } from './components/anims/anims';
 import { MachineComponent } from './components/items/machine';
 import png_bubble from '/public/speechBubble.png'
 
+import png_if from '/public/tiles/Interiors_free_32x32.png';
+import png_rb from '/public/tiles/Room_Builder_free_32x32.png';
+import json_testmap from '/public/tiles/testmap.json';
+
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private client = new Client('ws://localhost:2567');
@@ -31,6 +35,10 @@ export class GameScene extends Phaser.Scene {
       
     });
     this.load.image('speechBubble', png_bubble);
+
+    this.load.image('if',png_if)
+    this.load.image('rb',png_rb)
+    this.load.tilemapTiledJSON('testmap',json_testmap);
   }
 
   async create() {
