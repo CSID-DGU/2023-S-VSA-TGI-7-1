@@ -30,6 +30,13 @@ export class ChatComponent {
       .setScrollFactor(0)
       .setDepth(2);
 
+    this.scene.scale.on(
+      'resize',
+      (gameSize, baseSize, displaySize, resolution) => {
+        this.updateChatText();
+      }
+    );
+
     this.room.onMessage('chat', (message) => {
       this.chatMessages.push(`${message.id}: ${message.message}`);
       this.updateChatText();
@@ -80,11 +87,20 @@ export class ChatComponent {
   updateChatText() {
     const viewportWidth = this.scene.cameras.main.width;
     const viewportHeight = this.scene.cameras.main.height;
+    const desiredWidth = viewportWidth * 0.4;
+
+    // Update fixedWidth based on the new viewport width
+    this.text.setStyle({
+      ...this.text.style,
+      fixedWidth: desiredWidth,
+    });
+
     const textX = viewportWidth / 2;
-    const textY = viewportHeight - 220;
+    const textHeight = parseFloat(this.text.style.fixedHeight);
+    const textY = viewportHeight - textHeight;
 
     this.text.setPosition(textX, textY);
-    this.text.setOrigin(0.5);
+    this.text.setOrigin(0.5, 1);
 
     this.text.setText(
       [...this.chatMessages.slice(-5), this.chatInput].join('\n')
