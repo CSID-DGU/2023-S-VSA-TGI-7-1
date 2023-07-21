@@ -40,6 +40,11 @@ export class CharacterComponent {
       speechBubble.setVisible(false); // 일단 말풍선을 보이지 않게함
       speechBubble.setScale(90 / speechBubble.width, 90 / speechBubble.height);
 
+      if(isCurrentPlayer){
+        scene.physics.add.collider(this.currentPlayer,objectlayer);
+        scene.physics.add.collider(this.currentPlayer,tilelayer);
+      }
+
 
       scene.physics.add.collider(entity,machine,()=>{
         if (!entity.body.touching.none && !machine.body.touching.none) {
@@ -82,7 +87,18 @@ export class CharacterComponent {
       }
     });
     
+    //타일맵구현관련
     
+    const map = scene.make.tilemap({key:'testmap'})
+    const tileset1 = map.addTilesetImage('Interiors_free_32x32',"if");
+    const tileset2 = map.addTilesetImage('Room_Builder_free_32x32','rb');
+
+    const tilelayer = map.createLayer("tile layer",tileset2,0,0);
+    const objectlayer = map.createLayer("object layer",tileset1,0,0);
+    
+    tilelayer.setCollisionByProperty({ collides: true });
+    objectlayer.setCollisionByProperty({ collides: true });
+
     
   }
 
@@ -107,6 +123,7 @@ export class CharacterComponent {
     }else{
       this.currentPlayer.setVelocityY(0);
     }
+
 
     //내플레이어의 좌표정보를 서버로보냄
     this.room.send(1, { xc: this.currentPlayer.x, yc: this.currentPlayer.y });
