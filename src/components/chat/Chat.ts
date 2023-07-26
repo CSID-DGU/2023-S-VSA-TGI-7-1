@@ -26,14 +26,16 @@ export class ChatComponent {
       .text(0, 0, '', {
         color: 'white',
         fixedWidth: desiredWidth,
-        fixedHeight: '110',
+        fixedHeight: '200',
         wordWrap: { width: desiredWidth },
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         lineSpacing: '1.4',
-        fontSize: '15px',
+        fontSize: '25px', // Use a larger font size
+        fontWeight: '400',
       })
       .setScrollFactor(0)
-      .setDepth(2);
+      .setDepth(2)
+      .setScale(0.7);
 
     this.scene.scale.on(
       'resize',
@@ -88,7 +90,7 @@ export class ChatComponent {
   updateChatText() {
     const viewportWidth = this.scene.cameras.main.width;
     const viewportHeight = this.scene.cameras.main.height;
-    const desiredWidth = viewportWidth * 0.4;
+    const desiredWidth = viewportWidth * 0.58;
 
     // Update fixedWidth based on the new viewport width
     this.text.setStyle({
@@ -101,7 +103,7 @@ export class ChatComponent {
     const textY = viewportHeight - textHeight;
 
     this.text.setPosition(textX, textY);
-    this.text.setOrigin(0.5, 1.4);
+    this.text.setOrigin(0.5, 0.83);
 
     this.text.setText([...this.chatMessages.slice(-5)].join('\n'));
   }
