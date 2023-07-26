@@ -10,9 +10,12 @@ import { createAnimations } from './components/anims/anims';
 import { MachineComponent } from './components/items/machine';
 import png_bubble from '/public/speechBubble.png'
 
-import png_if from '/public/tiles/Interiors_free_32x32.png';
-import png_rb from '/public/tiles/Room_Builder_free_32x32.png';
-import json_testmap from '/public/tiles/testmap.json';
+import png_gd from '/public/tiles/17_Garden_32x32.png';
+import png_ct from '/public/tiles/2_City_Terrains_32x32.png';
+import png_vc from '/public/tiles/10_Vehicles_32x32.png';
+import png_cp from '/public/tiles/11_Camping_32x32.png';
+
+import json_testmap from '/public/tiles/remap.json';
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -36,8 +39,10 @@ export class GameScene extends Phaser.Scene {
     });
     this.load.image('speechBubble', png_bubble);
 
-    this.load.image('if',png_if)
-    this.load.image('rb',png_rb)
+    this.load.image('gd',png_gd);
+    this.load.image('ct',png_ct);
+    this.load.image('vc',png_vc);
+    this.load.image('cp',png_cp);
     this.load.tilemapTiledJSON('testmap',json_testmap);
   }
 
