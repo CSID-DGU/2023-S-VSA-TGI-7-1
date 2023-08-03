@@ -25,6 +25,9 @@ export class GameScene extends Phaser.Scene {
   private characterComponent: CharacterComponent;
   private keyboardComponent: KeyboardComponent;
   private machineComponent: MachineComponent;
+  public cp_object_layer:Phaser.Tilemaps.TilemapLayer;
+  public vc_object_layer:Phaser.Tilemaps.TilemapLayer;
+  public gd_object_layer:Phaser.Tilemaps.TilemapLayer; 
 
   constructor() {
     super('game-scene');
@@ -69,6 +72,26 @@ export class GameScene extends Phaser.Scene {
       this.machineComponent.initialize(this);
 
       this.cameras.main.zoom = 1.5
+
+      const map = this.make.tilemap({key:'testmap'});
+      const cptile = map.addTilesetImage('11_Camping_32x32',"cp");
+      const cttile = map.addTilesetImage('2_City_Terrains_32x32','ct');
+      const gdtile = map.addTilesetImage('17_Garden_32x32','gd');
+      const vctile = map.addTilesetImage('10_Vehicles_32x32','vc');
+  
+      const cp_tile_layer = map.createLayer("cp_tile_layer",cptile,0,0);
+      const ct_tile_layer = map.createLayer("ct_tile_layer",cttile,0,0);
+      const gd_tile_layer = map.createLayer("gd_tile_layer",gdtile,0,0);
+      this.cp_object_layer= map.createLayer("cp_object_layer",cptile,0,0);
+      this.vc_object_layer = map.createLayer("vc_object_layer",vctile,0,0);
+      this.gd_object_layer = map.createLayer("gd_object_layer",gdtile,0,0);
+      
+      this.cp_object_layer.setCollisionByProperty({ collides: true });
+      this.vc_object_layer.setCollisionByProperty({ collides: true });
+      this.gd_object_layer.setCollisionByProperty({ collides: true });
+
+
+      
       
     } catch (e) {
       console.error(e);
@@ -81,6 +104,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.characterComponent) {
+      if(this.characterComponent.currentPlayer){
+        this.physics.add.collider(this.characterComponent.currentPlayer,this.cp_object_layer);
+        this.physics.add.collider(this.characterComponent.currentPlayer,this.gd_object_layer);
+        this.physics.add.collider(this.characterComponent.currentPlayer,this.vc_object_layer);
+        }
       this.characterComponent.update();
     }
   }

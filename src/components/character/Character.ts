@@ -7,7 +7,7 @@ export class CharacterComponent {
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private object!: Phaser.Physics.Arcade.StaticGroup;
   private player!: Phaser.Physics.Arcade.Sprite;
-  private currentPlayer: Phaser.Physics.Arcade.Sprite;
+  public currentPlayer: Phaser.Physics.Arcade.Sprite;
   public cameraScene: Phaser.Scene;
 
   constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys) {
@@ -47,30 +47,6 @@ export class CharacterComponent {
       }
       this.cameraScene = scene;
 
-      this.object = scene.physics.add.staticGroup();
-      const machine = this.object.create(500, 500, 'machine');
-      machine.setSize(48, 64);
-
-      const speechBubble = scene.add.sprite(0, 0, 'speechBubble');
-      speechBubble.setVisible(false); // 일단 말풍선을 보이지 않게함
-      speechBubble.setScale(200 / speechBubble.width, 200 / speechBubble.height);
-
-      if (isCurrentPlayer) {
-        scene.physics.add.collider(this.currentPlayer,cp_object_layer);
-        scene.physics.add.collider(this.currentPlayer,gd_object_layer);
-        scene.physics.add.collider(this.currentPlayer,vc_object_layer);
-      }
-
-      scene.physics.add.collider(entity, machine, () => {
-        if (!entity.body.touching.none && !machine.body.touching.none) {
-          // character와 machine이 접촉 중인 경우에만 실행
-          speechBubble.setPosition(machine.x-80, machine.y - machine.height);
-          speechBubble.setVisible(true); // character와 machine이 충돌할 때 말풍선 표시
-          setTimeout(() => {
-            speechBubble.setVisible(false);
-          }, 1000);
-        }
-      });
 
       player.onChange(() => {
         //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
@@ -102,22 +78,7 @@ export class CharacterComponent {
 
     //타일맵구현관련
 
-    const map = scene.make.tilemap({key:'testmap'})
-    const cptile = map.addTilesetImage('11_Camping_32x32',"cp");
-    const cttile = map.addTilesetImage('2_City_Terrains_32x32','ct');
-    const gdtile = map.addTilesetImage('17_Garden_32x32','gd');
-    const vctile = map.addTilesetImage('10_Vehicles_32x32','vc');
 
-    const cp_tile_layer = map.createLayer("cp_tile_layer",cptile,0,0);
-    const ct_tile_layer = map.createLayer("ct_tile_layer",cttile,0,0);
-    const gd_tile_layer = map.createLayer("gd_tile_layer",gdtile,0,0);
-    const cp_object_layer = map.createLayer("cp_object_layer",cptile,0,0);
-    const vc_object_layer = map.createLayer("vc_object_layer",vctile,0,0);
-    const gd_object_layer = map.createLayer("gd_object_layer",gdtile,0,0);
-    
-    cp_object_layer.setCollisionByProperty({ collides: true });
-    vc_object_layer.setCollisionByProperty({ collides: true });
-    gd_object_layer.setCollisionByProperty({ collides: true });
 
   }
 
