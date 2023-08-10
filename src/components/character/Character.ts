@@ -9,6 +9,8 @@ export class CharacterComponent {
   private player!: Phaser.Physics.Arcade.Sprite;
   public currentPlayer: Phaser.Physics.Arcade.Sprite;
   public cameraScene: Phaser.Scene;
+  public containerBody: Phaser.Physics.Arcade.Body;
+
 
   constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys) {
     this.room = room;
@@ -31,15 +33,7 @@ export class CharacterComponent {
       entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
 
-      // sessionID 캐릭터 옆에 표시
-      // const sessionIdText = scene.add
-      //   .text(entity.x, entity.y - 30, `Session ID: ${sessionId}`, {
-      //     backgroundColor: 'black',
-      //     color: 'white',
-      //     fontSize: '20px',
-      //   })
-      //   .setDepth(4);
-      // entity.sessionIdText = sessionIdText;
+
 
       if (isCurrentPlayer) {
         //현재플레이어가 내플레이어일경우 currentplayer에 저장함
@@ -47,7 +41,31 @@ export class CharacterComponent {
       }
       this.cameraScene = scene;
 
-
+            // sessionID 캐릭터 옆에 표시
+      if (sessionId !== this.room.sessionId) {
+      const sessionIdText = scene.add
+        .text(entity.x-100, entity.y - 50, `Session ID: ${sessionId}`, {
+          backgroundColor: 'black',
+          color: 'white',
+          fontSize: '20px',
+        })
+        .setDepth(4);
+      entity.sessionIdText = sessionIdText;
+      }else{
+         const currentText = scene.add.container(entity.x-100,entity.y-50);
+         const sessionIdText = scene.add
+        .text(0, 0, `Session ID: ${sessionId}`, {
+          backgroundColor: 'black',
+          color: 'white',
+          fontSize: '20px',
+        })
+        .setDepth(4);
+        
+      this.currentPlayer.sessionIdText = sessionIdText;
+        currentText.add(sessionIdText);
+        scene.physics.world.enable(currentText);
+        this.containerBody = currentText.body as Phaser.Physics.Arcade.Body;
+      }
       player.onChange(() => {
         //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
 
@@ -90,26 +108,36 @@ export class CharacterComponent {
       this.cameraScene.cameras.main.startFollow(this.currentPlayer, true);
       if (this.cursorKeys.left.isDown) {
         this.currentPlayer.setVelocityX(-200);
+        this.containerBody.setVelocityX(-200);
+ 
       } else if (this.cursorKeys.right.isDown) {
         this.currentPlayer.setVelocityX(200);
+        this.containerBody.setVelocityX(200);
       } else {
         this.currentPlayer.setVelocityX(0);
+        this.containerBody.setVelocityX(0);
       }
 
       if (this.cursorKeys.up.isDown) {
         this.currentPlayer.setVelocityY(-200);
+        this.containerBody.setVelocityY(-200);
       } else if (this.cursorKeys.down.isDown) {
         this.currentPlayer.setVelocityY(200);
+        this.containerBody.setVelocityY(200);
       } else {
         this.currentPlayer.setVelocityY(0);
+        this.containerBody.setVelocityY(0);
       }
 
       // sessionID 캐릭터 옆에 표시
-      // for (let sessionId in this.playerEntities) {
-      //   let entity = this.playerEntities[sessionId];
-      //   entity.sessionIdText.setPosition(entity.x, entity.y - 30);
-      // }
-
+      
+      for (let sessionId in this.playerEntities) {
+        if (sessionId !== this.room.sessionId) {
+        let entity = this.playerEntities[sessionId];
+        entity.sessionIdText.setPosition(entity.x-100, entity.y - 50);
+        }
+      }
+    
       //내플레이어의 좌표정보를 서버로보냄
       this.room.send(1, { xc: this.currentPlayer.x, yc: this.currentPlayer.y });
     }
