@@ -8,12 +8,9 @@ import { ChatComponent } from './components/chat/Chat';
 import { KeyboardComponent } from './components/keyboard/Keyboard';
 import { createAnimations } from './components/anims/anims';
 import { MachineComponent } from './components/items/machine';
-import png_bubble from '/public/speechBubble.png'
+import png_bubble from '/public/speechBubble.png';
 
-import png_gd from '/public/tiles/17_Garden_32x32.png';
-import png_ct from '/public/tiles/2_City_Terrains_32x32.png';
-import png_vc from '/public/tiles/10_Vehicles_32x32.png';
-import png_cp from '/public/tiles/11_Camping_32x32.png';
+import png_park from '../public/tiles/Modern_Exteriors_Complete_Tileset_48x48.png';
 
 import json_testmap from '/public/tiles/remap.json';
 
@@ -25,9 +22,8 @@ export class GameScene extends Phaser.Scene {
   private characterComponent: CharacterComponent;
   private keyboardComponent: KeyboardComponent;
   private machineComponent: MachineComponent;
-  public cp_object_layer:Phaser.Tilemaps.TilemapLayer;
-  public vc_object_layer:Phaser.Tilemaps.TilemapLayer;
-  public gd_object_layer:Phaser.Tilemaps.TilemapLayer; 
+  public obstacles_collide_bg: Phaser.Tilemaps.TilemapLayer;
+  public gd_object_layer: Phaser.Tilemaps.TilemapLayer;
 
   constructor() {
     super('game-scene');
@@ -38,15 +34,10 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('machine', png_machine, {
       frameWidth: 64,
       frameHeight: 64,
-      
     });
     this.load.image('speechBubble', png_bubble);
-
-    this.load.image('gd',png_gd);
-    this.load.image('ct',png_ct);
-    this.load.image('vc',png_vc);
-    this.load.image('cp',png_cp);
-    this.load.tilemapTiledJSON('testmap',json_testmap);
+    this.load.image('park', png_park);
+    this.load.tilemapTiledJSON('testmap', json_testmap);
   }
 
   async create() {
@@ -71,28 +62,35 @@ export class GameScene extends Phaser.Scene {
       this.characterComponent.initialize(this);
       this.machineComponent.initialize(this);
 
-      this.cameras.main.zoom = 1.5
+      this.cameras.main.zoom = 1.5;
 
-      const map = this.make.tilemap({key:'testmap'});
-      const cptile = map.addTilesetImage('11_Camping_32x32',"cp");
-      const cttile = map.addTilesetImage('2_City_Terrains_32x32','ct');
-      const gdtile = map.addTilesetImage('17_Garden_32x32','gd');
-      const vctile = map.addTilesetImage('10_Vehicles_32x32','vc');
-  
-      const cp_tile_layer = map.createLayer("cp_tile_layer",cptile,0,0);
-      const ct_tile_layer = map.createLayer("ct_tile_layer",cttile,0,0);
-      const gd_tile_layer = map.createLayer("gd_tile_layer",gdtile,0,0);
-      this.cp_object_layer= map.createLayer("cp_object_layer",cptile,0,0);
-      this.vc_object_layer = map.createLayer("vc_object_layer",vctile,0,0);
-      this.gd_object_layer = map.createLayer("gd_object_layer",gdtile,0,0);
-      
-      this.cp_object_layer.setCollisionByProperty({ collides: true });
-      this.vc_object_layer.setCollisionByProperty({ collides: true });
-      this.gd_object_layer.setCollisionByProperty({ collides: true });
+      const map = this.make.tilemap({ key: 'testmap' });
+      const park = map.addTilesetImage(
+        'Modern_Exteriors_Complete_Tileset_48x48',
+        'park'
+      );
 
+      const ground = map.createLayer('ground', park, 0, 0);
+      const obstacles_not_collide = map.createLayer(
+        'obstacles_not_collide',
+        park,
+        0,
+        0
+      );
+      const path_fg = map.createLayer('path_fg', park, 0, 0);
+      const path_bg = map.createLayer('path_bg', park, 0, 0);
+      this.obstacles_collide = map.createLayer('obstacles_collide', park, 0, 0);
+      this.obstacles_collide_bg = map.createLayer(
+        'obstacles_collide_bg',
+        park,
+        0,
+        0
+      );
+      this.chair = map.createLayer('chair', park, 0, 0);
 
-      
-      
+      this.obstacles_collide.setCollisionByProperty({ collides: true });
+      this.obstacles_collide_bg.setCollisionByProperty({ collides: true });
+      this.chair.setCollisionByProperty({ collides: true });
     } catch (e) {
       console.error(e);
     }
@@ -104,11 +102,20 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.characterComponent) {
-      if(this.characterComponent.currentPlayer){
-        this.physics.add.collider(this.characterComponent.currentPlayer,this.cp_object_layer);
-        this.physics.add.collider(this.characterComponent.currentPlayer,this.gd_object_layer);
-        this.physics.add.collider(this.characterComponent.currentPlayer,this.vc_object_layer);
-        }
+      if (this.characterComponent.currentPlayer) {
+        this.physics.add.collider(
+          this.characterComponent.currentPlayer,
+          this.obstacles_collide
+        );
+        this.physics.add.collider(
+          this.characterComponent.currentPlayer,
+          this.obstacles_collide_bg
+        );
+        this.physics.add.collider(
+          this.characterComponent.currentPlayer,
+          this.chair
+        );
+      }
       this.characterComponent.update();
     }
   }
