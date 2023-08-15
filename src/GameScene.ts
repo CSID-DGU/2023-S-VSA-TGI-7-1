@@ -41,9 +41,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   async create() {
-    try {
-      this.room = await this.client.joinOrCreate('my_room');
-      console.log('Joined successfully!');
+    // 채팅 컨테이너를 보이게 하는 코드를 추가합니다.
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+      chatContainer.style.display = 'block';
+    }
+  try {
+    this.room = await this.client.joinOrCreate('my_room');
+    console.log('Joined successfully!');
 
       createAnimations(this.anims);
 
@@ -62,7 +67,7 @@ export class GameScene extends Phaser.Scene {
       this.characterComponent.initialize(this);
       this.machineComponent.initialize(this);
 
-      this.cameras.main.zoom = 1.5;
+      this.cameras.main.zoom = 1.2;
 
       const map = this.make.tilemap({ key: 'testmap' });
       const park = map.addTilesetImage(

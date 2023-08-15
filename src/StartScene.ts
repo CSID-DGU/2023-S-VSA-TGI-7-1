@@ -3,10 +3,11 @@ import Phaser from 'phaser';
 import cloud_day from '/public/background/cloud_day.png';
 import backdrop_day from '/public/background/backdrop_day.png';
 import cloud_night from '/public/background/cloud_night.png';
-import backdrop_night from '/public/background/backdrop_night.png';
-import sun_moon from '/public/background/sun_moon.png';
+import backdrop_night from '/public/background/backdrop_night.jpg';
+import moon from '/public/background/moon.png';
 import sun from '/public/background/sun.png';
-import toggle_icon from '/public/background/toggle_icon.png';
+import toggle_on_icon from '/public/background/toggle_on_icon.png';
+import toggle_off_icon from '/public/background/toggle_off_icon.png';
 import start_button from '/public/background/start_button.png';
 
 export class StartScene extends Phaser.Scene {
@@ -24,14 +25,20 @@ export class StartScene extends Phaser.Scene {
     // Load the cloud asset (adjust the cloudKey according to your asset)
     this.load.image('cloud_day', cloud_day);
     this.load.image('backdrop_day', backdrop_day);
-    this.load.image('sun_moon', sun_moon);
+    this.load.image('moon', moon);
     this.load.image('cloud_night', cloud_night);
     this.load.image('backdrop_night', backdrop_night);
     this.load.image('sun', sun);
-    this.load.image('toggle_icon', toggle_icon);
+    this.load.image('toggle_on_icon', toggle_on_icon);
+    this.load.image('toggle_off_icon', toggle_off_icon);
     this.load.image('start_button', start_button);
   }
   create() {
+    // 채팅 컨테이너를 숨기는 코드를 추가합니다.
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+      chatContainer.style.display = 'none';
+    }
     // Get the initial background mode from the userSlice
     const sceneHeight = this.cameras.main.height;
     const sceneWidth = this.cameras.main.width;
@@ -48,23 +55,19 @@ export class StartScene extends Phaser.Scene {
     backdropImage.setScale(scale).setScrollFactor(0);
 
     // Add sun or moon image
-    const sunMoonImage = this.add.image(
-      sceneWidth / 2,
-      sceneHeight / 2,
-      'sun_moon'
-    );
+    const moonImage = this.add.image(sceneWidth / 2, sceneHeight / 2, 'moon');
     const scale2 = Math.max(
-      sceneWidth / sunMoonImage.width,
-      sceneHeight / sunMoonImage.height
+      sceneWidth / moonImage.width,
+      sceneHeight / moonImage.height
     );
-    sunMoonImage.setScale(scale2).setScrollFactor(0);
+    moonImage.setScale(scale2).setScrollFactor(0);
 
     // Add 24 clouds at random positions and with random speeds
     const frames = this.textures.get(this.cloudKey).getFrameNames();
     this.cloud = this.physics.add.group();
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 7; i++) {
       const x = Phaser.Math.RND.between(-sceneWidth * 0.5, sceneWidth * 1.5);
-      const y = Phaser.Math.RND.between(sceneHeight * 0.2, sceneHeight * 0.8);
+      const y = Phaser.Math.RND.between(sceneHeight * 0.15, sceneHeight * 0.45);
       const velocity = Phaser.Math.RND.between(15, 30);
 
       this.cloud
@@ -101,78 +104,95 @@ export class StartScene extends Phaser.Scene {
     // Move the description text down
     descriptionText.setY(300);
 
-    // Toggle button for changing background
-    const toggleBackdropButton = this.add
-      .image(this.cameras.main.width - 50, 50, 'toggle_icon') // 토글 아이콘 이미지를 사용
-      .setScrollFactor(0)
-      .setInteractive();
+ // Toggle buttons for changing background
+const toggleBackdropButtonOn = this.add
+.image(this.cameras.main.width - 100, 50, 'toggle_on_icon')
+.setScrollFactor(0)
+.setInteractive();
 
+const toggleBackdropButtonOff = this.add
+.image(this.cameras.main.width - 50, 50, 'toggle_off_icon')
+.setScrollFactor(0)
+.setInteractive();
 
-      
-    toggleBackdropButton.on('pointerdown', () => {
-      if (this.backdropKey === 'backdrop_day') {
-        this.backdropKey = 'backdrop_night';
-        this.cloudKey = 'cloud_night';
-      } else {
-        this.backdropKey = 'backdrop_day';
-        this.cloudKey = 'cloud_day';
-      }
-      this.changeBackground();
-      this.changeClouds();
+const toggleBackdrop = () => {
+  if (this.backdropKey === 'backdrop_day') {
+    this.backdropKey = 'backdrop_night';
+    this.cloudKey = 'cloud_night';
+  } else {
+    this.backdropKey = 'backdrop_day';
+    this.cloudKey = 'cloud_day';
+  }
+  this.changeBackground();
+  this.changeClouds();
 
-      // 요소들을 앞으로 가져오기
-      this.children.bringToTop(titleText);
-      this.children.bringToTop(descriptionText);
-      this.children.bringToTop(startButton);
-     /*  this.children.bringToTop(loginButton); */
-      this.children.bringToTop(toggleBackdropButton);
-    });
-    // 토글 버튼에 마우스 호버 효과 추가
-    toggleBackdropButton.on('pointerover', () => {
-      toggleBackdropButton.setScale(1.2); // 버튼 크기를 확대
+  // 요소들을 앞으로 가져오기
+  this.children.bringToTop(titleText);
+  this.children.bringToTop(descriptionText);
+  this.children.bringToTop(startButton);
+  /*  this.children.bringToTop(loginButton); */
+  this.children.bringToTop(toggleBackdropButtonOn);
+  this.children.bringToTop(toggleBackdropButtonOff);
+}
+// Hover effect for the "toggle on" button
+toggleBackdropButtonOn.on('pointerover', () => {
+  toggleBackdropButtonOn.setScale(1.2); // 버튼 크기를 확대
+  this.input.setDefaultCursor('pointer');
+});
+
+toggleBackdropButtonOn.on('pointerout', () => {
+  toggleBackdropButtonOn.setScale(1); // 원래 크기로 복원
+  this.input.setDefaultCursor('auto');
+});
+
+toggleBackdropButtonOn.on('pointerdown', toggleBackdrop);
+
+// Hover effect for the "toggle off" button
+toggleBackdropButtonOff.on('pointerover', () => {
+  toggleBackdropButtonOff.setScale(1.2); // 버튼 크기를 확대
+  this.input.setDefaultCursor('pointer');
+});
+
+toggleBackdropButtonOff.on('pointerout', () => {
+  toggleBackdropButtonOff.setScale(1); // 원래 크기로 복원
+  this.input.setDefaultCursor('auto');
+});
+
+toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
+
+    // 이미지로 대체된 startButton
+    const startButton = this.add
+      .image(this.cameras.main.centerX, 480, 'start_button') // 이미지 이름을 사용
+      .setOrigin(0.5)
+      .setInteractive()
+      .setDepth(1); // 이미지가 클라우드보다 위에 표시되도록 설정
+
+    // 호버 효과
+    startButton.on('pointerover', () => {
+      startButton.setScale(1.1);
+      /* startButton.setTint(0xffaa00); // 틴트(색상 변화) 효과 추가 */
       this.input.setDefaultCursor('pointer');
     });
 
-    toggleBackdropButton.on('pointerout', () => {
-      toggleBackdropButton.setScale(1); // 원래 크기로 복원
+    startButton.on('pointerout', () => {
+      startButton.setScale(1);
+      /* startButton.setTint(0xffffff); // 원래 틴트 복원 */
       this.input.setDefaultCursor('auto');
     });
 
-    // 이미지로 대체된 startButton
-const startButton = this.add
-.image(this.cameras.main.centerX, 450, 'start_button') // 이미지 이름을 사용
-.setOrigin(0.5)
-.setInteractive()
-.setDepth(1) // 이미지가 클라우드보다 위에 표시되도록 설정
+    startButton.on('pointerdown', () => {
+      this.scene.start('game-scene');
+    });
 
-
-// 호버 효과
-startButton.on('pointerover', () => {
-startButton.setScale(1.1);
-startButton.setTint(0xffaa00); // 틴트(색상 변화) 효과 추가
-this.input.setDefaultCursor('pointer');
-});
-
-startButton.on('pointerout', () => {
-startButton.setScale(1);
-startButton.setTint(0xffffff); // 원래 틴트 복원
-this.input.setDefaultCursor('auto');
-});
-
-startButton.on('pointerdown', () => {
-this.scene.start('game-scene');
-});
-
-// 애니메이션 효과
-this.tweens.add({
-targets: startButton,
-scaleX: 1.1,
-scaleY: 1.1,
-duration: 1000,
-yoyo: true,
-repeat: -1,
-});
-
+    // Create an animation to move the startButton slightly
+    this.tweens.add({
+      targets: startButton,
+      x: startButton.x + 5, // Move the button 5 pixels to the right
+      y: startButton.y + 3, // Move the button 5 pixels down
+      duration: 500, // Duration of the animation in milliseconds
+      yoyo: true, // Play the animation in reverse
+      repeat: -1, // Repeat the animation indefinitely
+    });
     // 로그인 버튼 추가시 주석 해제
 
     /* const loginButton = this.add
@@ -234,6 +254,7 @@ repeat: -1,
       yoyo: true,
       repeat: -1,
     }); */
+
     // Bring the elements to the front so they appear above the cloud image
     this.add.existing(titleText);
     this.children.bringToTop(titleText);
@@ -266,6 +287,12 @@ repeat: -1,
       .setOrigin(0.5)
       .setDisplaySize(sceneWidth, sceneHeight)
       .setScrollFactor(0);
+    // Adjust the display size to match the width, maintaining the aspect ratio
+    newBackdropImage.setDisplaySize(
+      sceneWidth,
+      newBackdropImage.height * (sceneWidth / newBackdropImage.width)
+    );
+    newBackdropImage.setOrigin(0.5).setScrollFactor(0);
 
     // Remove or hide sun image when changing to night backdrop
     const existingSunImage = this.children.getByName('sunImage');
@@ -286,6 +313,26 @@ repeat: -1,
         sunImage.setScale(scale1).setScrollFactor(0);
       }
     }
+
+    // Remove or hide moon image when changing to day backdrop
+    const existingMoonImage = this.children.getByName('moonImage');
+    if (this.backdropKey === 'backdrop_day') {  
+      if (existingMoonImage) {
+        existingMoonImage.destroy();
+      }
+    } else { 
+      // Add moon image when changing to night backdrop
+      if (!existingMoonImage) {
+        const moonImage = this.add
+          .image(sceneWidth / 2, sceneHeight / 2, 'moon')
+          .setName('moonImage');
+        const scale2 = Math.max(
+          sceneWidth / moonImage.width,
+          sceneHeight / moonImage.height
+        );
+        moonImage.setScale(scale2).setScrollFactor(0);
+      }
+    }
   }
 
   private changeClouds() {
@@ -296,9 +343,9 @@ repeat: -1,
     const sceneWidth = this.cameras.main.width;
 
     const frames = this.textures.get(this.cloudKey).getFrameNames();
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 7; i++) {
       const x = Phaser.Math.RND.between(-sceneWidth * 0.5, sceneWidth * 1.5);
-      const y = Phaser.Math.RND.between(sceneHeight * 0.2, sceneHeight * 0.8);
+      const y = Phaser.Math.RND.between(sceneHeight * 0.15, sceneHeight * 0.45);
       const velocity = Phaser.Math.RND.between(15, 30);
 
       this.cloud

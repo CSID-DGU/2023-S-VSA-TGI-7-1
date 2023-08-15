@@ -14,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: window.innerWidth,
     height: window.innerHeight,
   },
-  backgroundColor: "#011111",
+  backgroundColor: "#343a40",
   parent: "phaser-example",
   physics: { default: "arcade" },
   pixelArt: true,
