@@ -1,5 +1,10 @@
+// DEPENDENCIES
 import Phaser from "phaser";
+// RUN MAIN
 import { GameScene } from "./src/GameScene";
+// RUN START
+import { StartScene } from "./src/StartScene";
+
 // game config
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -9,11 +14,11 @@ const config: Phaser.Types.Core.GameConfig = {
     width: window.innerWidth,
     height: window.innerHeight,
   },
-  backgroundColor: "#b6d53c",
+  backgroundColor: "#343a40",
   parent: "phaser-example",
   physics: { default: "arcade" },
   pixelArt: true,
-  scene: [GameScene],
+  scene: [StartScene, GameScene],
 };
 
 // instantiate the game

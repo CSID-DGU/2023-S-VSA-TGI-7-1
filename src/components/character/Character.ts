@@ -11,7 +11,6 @@ export class CharacterComponent {
   public cameraScene: Phaser.Scene;
   public containerBody: Phaser.Physics.Arcade.Body;
 
-
   constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys) {
     this.room = room;
     this.cursorKeys = cursorKeys;
@@ -33,35 +32,38 @@ export class CharacterComponent {
       entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
 
-
-
       if (isCurrentPlayer) {
         //현재플레이어가 내플레이어일경우 currentplayer에 저장함
         this.currentPlayer = entity;
       }
       this.cameraScene = scene;
 
-            // sessionID 캐릭터 옆에 표시
+      // sessionID 캐릭터 옆에 표시
       if (sessionId !== this.room.sessionId) {
-      const sessionIdText = scene.add
-        .text(entity.x-100, entity.y - 50, `Session ID: ${sessionId}`, {
-          backgroundColor: 'black',
-          color: 'white',
-          fontSize: '20px',
-        })
-        .setDepth(4);
-      entity.sessionIdText = sessionIdText;
-      }else{
-         const currentText = scene.add.container(entity.x-100,entity.y-50);
-         const sessionIdText = scene.add
-        .text(0, 0, `Session ID: ${sessionId}`, {
-          backgroundColor: 'black',
-          color: 'white',
-          fontSize: '20px',
-        })
-        .setDepth(4);
-        
-      this.currentPlayer.sessionIdText = sessionIdText;
+        const sessionIdText = scene.add
+          .text(entity.x - 100, entity.y - 30, ` ID : ${sessionId} `, {
+            color: '#3F2305',
+            fontSize: '17px',
+            fontFamily: 'Tektur',
+            backgroundColor: '#F2EAD3',
+          })
+          .setDepth(4);
+        entity.sessionIdText = sessionIdText;
+      } else {
+        const currentText = scene.add.container(entity.x - 100, entity.y - 60);
+        const sessionIdText = scene.add
+          .text(0, 0, ` ID : ${sessionId} `, {
+            backgroundColor: '#445069',
+            fontFamily: 'Tektur',
+            color: '#F7E987',
+            fontSize: '20px',
+            padding: { y: 2 },
+            stroke: '#000', // 테두리 색상
+            strokeThickness: 6, // 테두리 두께
+          })
+          .setDepth(4);
+
+        this.currentPlayer.sessionIdText = sessionIdText;
         currentText.add(sessionIdText);
         scene.physics.world.enable(currentText);
         this.containerBody = currentText.body as Phaser.Physics.Arcade.Body;
@@ -91,13 +93,14 @@ export class CharacterComponent {
       if (entity) {
         entity.destroy();
         delete this.playerEntities[sessionId];
+        const sessionIdText = entity.sessionIdText;
+        if (sessionIdText) {
+          sessionIdText.destroy(); // 아이디 텍스트도 제거
+        }
       }
     });
 
     //타일맵구현관련
-
-
-
   }
 
   update() {
@@ -109,7 +112,6 @@ export class CharacterComponent {
       if (this.cursorKeys.left.isDown) {
         this.currentPlayer.setVelocityX(-200);
         this.containerBody.setVelocityX(-200);
- 
       } else if (this.cursorKeys.right.isDown) {
         this.currentPlayer.setVelocityX(200);
         this.containerBody.setVelocityX(200);
@@ -128,16 +130,19 @@ export class CharacterComponent {
         this.currentPlayer.setVelocityY(0);
         this.containerBody.setVelocityY(0);
       }
+      // containerBody의 위치를 현재 플레이어의 위치로 업데이트
+      this.containerBody.x = this.currentPlayer.x-100;
+      this.containerBody.y = this.currentPlayer.y-60;
 
       // sessionID 캐릭터 옆에 표시
-      
+
       for (let sessionId in this.playerEntities) {
         if (sessionId !== this.room.sessionId) {
-        let entity = this.playerEntities[sessionId];
-        entity.sessionIdText.setPosition(entity.x-100, entity.y - 50);
+          let entity = this.playerEntities[sessionId];
+          entity.sessionIdText.setPosition(entity.x - 100, entity.y - 30);
         }
       }
-    
+
       //내플레이어의 좌표정보를 서버로보냄
       this.room.send(1, { xc: this.currentPlayer.x, yc: this.currentPlayer.y });
     }

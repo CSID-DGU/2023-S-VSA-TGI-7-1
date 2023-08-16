@@ -5,9 +5,47 @@ export class ChatComponent {
   private room: Room;
   private chatMessages: string[] = [];
   private chatInput: string = '';
-  private text: Phaser.GameObjects.Text;
   private chatMode: boolean;
   private sessionIDArray: string[] = [];
+  // 미사용 색상 목록
+  private availableColors = [
+    '#0079FF',
+    '#0079FF',
+    '#F6FA70',
+    '#FF0060',
+    '#FFB84C',
+    '#F266AB',
+    '#F266AB',
+    '#F266AB',
+    // 추가 색상을 필요한 만큼 더 정의할 수 있습니다.
+  ];
+  // 아이디와 색상을 매핑하는 객체
+  private idColorMap = {};
+
+  getColorForId(id) {
+    if (!this.idColorMap[id]) {
+      // 새로운 사용자 아이디에 대해 정의된 팔레트에서 겹치지 않는 색상을 선택합니다.
+      if (id === 'yourUserId') {
+        // 자신의 아이디일 경우 미사용 색상 중에서 랜덤하게 선택합니다.
+        const availableColors = this.availableColors.filter(color => !Object.values(this.idColorMap).includes(color));
+        const randomIndex = Math.floor(Math.random() * availableColors.length);
+        this.idColorMap[id] = availableColors[randomIndex];
+      } else {
+        // 다른 사용자의 아이디일 경우 미사용 색상 중에서 랜덤하게 선택합니다.
+        const availableColors = this.availableColors.filter(color => !Object.values(this.idColorMap).includes(color));
+        if (availableColors.length === 0) {
+          // 더 이상 사용 가능한 색상이 없을 경우, 기존 색상 중 하나를 재사용합니다.
+          const existingColors = Object.values(this.idColorMap);
+          const randomIndex = Math.floor(Math.random() * existingColors.length);
+          this.idColorMap[id] = existingColors[randomIndex];
+        } else {
+          const randomIndex = Math.floor(Math.random() * availableColors.length);
+          this.idColorMap[id] = availableColors[randomIndex];
+        }
+      }
+    }
+    return this.idColorMap[id];
+  }
 
   scene: Phaser.Scene = CharacterComponent.cameraScene;
 
@@ -19,46 +57,28 @@ export class ChatComponent {
 
   initialize(scene: Phaser.Scene) {
     this.scene = scene;
-    const viewportWidth = this.scene.cameras.main.width;
-    const desiredWidth = viewportWidth * 0.4;
-
-    this.text = this.scene.add
-      .text(0, 0, '', {
-        color: 'white',
-        fixedWidth: desiredWidth,
-        fixedHeight: '200',
-        wordWrap: { width: desiredWidth },
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        lineSpacing: '1.4',
-        fontSize: '25px', // Use a larger font size
-        fontWeight: '400',
-      })
-      .setScrollFactor(0)
-      .setDepth(2)
-      .setScale(0.7);
+    const chatContainer = document.getElementById('chat-messages'); // Get the chat container element
+    const chatInput = document.getElementById('chat-input') as HTMLInputElement;
 
     this.scene.scale.on(
       'resize',
       (gameSize, baseSize, displaySize, resolution) => {
-        this.updateChatText();
+        // Adjust chat container size based on the new viewport size
+        // You can also adjust other styles here
       }
     );
 
     this.room.onMessage('chat', (message) => {
-      this.chatMessages.push(` ${message.id}: ${message.message}`);
-      this.updateChatText();
-
-      if (!this.sessionIDArray.includes(message.id)) {
-        this.sessionIDArray.push(message.id);
-      }
-
+      this.chatMessages.push(`${message.id} : ${message.message}`);
+      this.updateChatText(chatContainer);
       console.log(`${message.id}: ${message.message}`);
+      // 채팅 메시지가 추가될 때마다 자동으로 스크롤을 아래로 내립니다.
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     });
 
     this.chatMode = false;
 
     window.addEventListener('keydown', (event: KeyboardEvent) => {
-      let chatInput = document.getElementById('chat-input') as HTMLInputElement;
       if (event.key === 'Enter') {
         if (!chatInput.value) {
           // If the input field is empty
@@ -68,43 +88,38 @@ export class ChatComponent {
             this.room.send('chat', chatInput.value);
           }
           chatInput.value = '';
-          this.chatInput = '';
           chatInput.blur(); // Remove focus from the input field
         }
       } else if (event.key === ' ') {
         chatInput.value += ' ';
-        this.chatInput = chatInput.value;
-        this.updateChatText();
+        this.updateChatText(chatContainer);
       } else {
-        this.chatInput = chatInput.value;
-        this.updateChatText();
+        this.updateChatText(chatContainer);
       }
     });
 
-    let chatInput = document.getElementById('chat-input') as HTMLInputElement;
     chatInput.style.display = 'block';
 
-    this.updateChatText();
+    this.updateChatText(chatContainer);
   }
 
-  updateChatText() {
-    const viewportWidth = this.scene.cameras.main.width;
-    const viewportHeight = this.scene.cameras.main.height;
-    const desiredWidth = viewportWidth * 0.58;
+  updateChatText(chatContainer: HTMLElement) {
+    chatContainer.innerHTML = ''; // Clear the chat container
 
-    // Update fixedWidth based on the new viewport width
-    this.text.setStyle({
-      ...this.text.style,
-      fixedWidth: desiredWidth,
-    });
+    for (const message of this.chatMessages.slice(-20)) {
+      const messageElement = document.createElement('div');
+      const spanElement = document.createElement('span');
+      const [id, msg] = message.split(': ');
 
-    const textX = viewportWidth / 2;
-    const textHeight = parseFloat(this.text.style.fixedHeight);
-    const textY = viewportHeight - textHeight;
+      spanElement.textContent = id;
+      spanElement.style.color = this.getColorForId(id); // 아이디에 대한 색상을 설정합니다.
 
-    this.text.setPosition(textX, textY);
-    this.text.setOrigin(0.5, 0.83);
+      messageElement.appendChild(spanElement);
 
-    this.text.setText([...this.chatMessages.slice(-5)].join('\n'));
+      const messageText = document.createTextNode(`: ${msg}`);
+      messageElement.appendChild(messageText);
+
+      chatContainer.appendChild(messageElement);
+    }
   }
 }
