@@ -24,6 +24,11 @@ export class GameScene extends Phaser.Scene {
   private machineComponent: MachineComponent;
   public obstacles_collide_bg: Phaser.Tilemaps.TilemapLayer;
   public gd_object_layer: Phaser.Tilemaps.TilemapLayer;
+  public userId: string;
+  
+  init (data){
+    this.userId = data.userInput;
+  }
 
   constructor() {
     super('game-scene');
@@ -48,15 +53,16 @@ export class GameScene extends Phaser.Scene {
     }
   try {
     this.room = await this.client.joinOrCreate('my_room');
+    this.room.send(2, { name:this.userId });
     console.log('Joined successfully!');
-
       createAnimations(this.anims);
 
       this.machineComponent = new MachineComponent(this.room);
       this.chatComponent = new ChatComponent(this.room);
       this.characterComponent = new CharacterComponent(
         this.room,
-        this.input.keyboard.createCursorKeys()
+        this.input.keyboard.createCursorKeys(),
+        this.userId
       );
       this.keyboardComponent = new KeyboardComponent(
         this.room,

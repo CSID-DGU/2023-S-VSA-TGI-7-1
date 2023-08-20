@@ -18,6 +18,9 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: "phaser-example",
   physics: { default: "arcade" },
   pixelArt: true,
+  dom: {
+    createContainer: true
+},
   scene: [StartScene, GameScene],
 };
 
