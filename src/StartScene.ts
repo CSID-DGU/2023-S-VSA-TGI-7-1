@@ -9,6 +9,7 @@ import sun from '/public/background/sun.png';
 import toggle_on_icon from '/public/background/toggle_on_icon.png';
 import toggle_off_icon from '/public/background/toggle_off_icon.png';
 import start_button from '/public/background/start_button.png';
+import name_form from '/public/nameform.html'
 
 export class StartScene extends Phaser.Scene {
   private cloud!: Phaser.Physics.Arcade.Group;
@@ -32,8 +33,29 @@ export class StartScene extends Phaser.Scene {
     this.load.image('toggle_on_icon', toggle_on_icon);
     this.load.image('toggle_off_icon', toggle_off_icon);
     this.load.image('start_button', start_button);
+    this.load.html('nameform', name_form);
   }
   create() {
+
+    const element1 = this.add.dom(this.cameras.main.centerX, 380).createFromCache('nameform');
+
+    // // 저장 버튼 생성
+    // const button = this.add.dom(1530, 380, 'button', 'font-size: 24px', 'Save');
+    // button.addListener('click');
+
+    // // 저장 버튼 클릭 이벤트 핸들링
+    // button.on('click', () => {
+    //     const userInput = input.node.value;
+    //     this.playerId = userInput;
+        
+    //     // 변수에 저장된 아이디 출력
+    //     this.add.text(100, 100, 'Player ID: ' + this.playerId, { fontSize: '32px', fill: '#fff' });
+        
+    //     // 입력 요소와 버튼 제거
+    //     input.destroy();
+    //     button.destroy();
+    // });
+      
     // 채팅 컨테이너를 숨기는 코드를 추가합니다.
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
@@ -127,6 +149,7 @@ const toggleBackdrop = () => {
   this.changeClouds();
 
   // 요소들을 앞으로 가져오기
+  this.children.bringToTop(element1);
   this.children.bringToTop(titleText);
   this.children.bringToTop(descriptionText);
   this.children.bringToTop(startButton);
@@ -181,7 +204,19 @@ toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
     });
 
     startButton.on('pointerdown', () => {
-      this.scene.start('game-scene');
+      
+      var inputElement = element1.node.querySelector('input');
+
+      var inputValue = inputElement.value; // 입력된 값을 가져와 저장
+
+      if(inputValue){
+        
+        this.scene.start('game-scene',{ userInput: inputValue });
+      }
+      else{
+        window.alert("아이디를 입력해주세여");
+      }
+      
     });
 
     // Create an animation to move the startButton slightly
@@ -262,6 +297,8 @@ toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
     this.children.bringToTop(descriptionText);
     this.add.existing(startButton);
     this.children.bringToTop(startButton);
+    this.add.existing(element1);
+    this.children.bringToTop(element1);
     /* this.add.existing(loginButton);
     this.children.bringToTop(loginButton); */
   }

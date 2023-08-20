@@ -10,16 +10,18 @@ export class CharacterComponent {
   public currentPlayer: Phaser.Physics.Arcade.Sprite;
   public cameraScene: Phaser.Scene;
   public containerBody: Phaser.Physics.Arcade.Body;
+  public userId: String;
 
-  constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys) {
+  constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys, userId: String) {
     this.room = room;
     this.cursorKeys = cursorKeys;
+    this.userId = userId;
   }
 
   initialize(scene: Phaser.Scene) {
     this.room.state.players.onAdd((player, sessionId) => {
       console.log('A player has joined! Their unique session id is', sessionId);
-
+      
       var isCurrentPlayer = sessionId === this.room.sessionId;
 
       const entity = scene.physics.add.sprite(
@@ -37,11 +39,11 @@ export class CharacterComponent {
         this.currentPlayer = entity;
       }
       this.cameraScene = scene;
-
+      
       // sessionID 캐릭터 옆에 표시
       if (sessionId !== this.room.sessionId) {
         const sessionIdText = scene.add
-          .text(entity.x - 100, entity.y - 30, ` ID : ${sessionId} `, {
+          .text(entity.x - 60, entity.y - 60, `${player.name} `, {
             color: '#3F2305',
             fontSize: '17px',
             fontFamily: 'Tektur',
@@ -52,8 +54,8 @@ export class CharacterComponent {
       } else {
         const currentText = scene.add.container(entity.x - 100, entity.y - 60);
         const sessionIdText = scene.add
-          .text(0, 0, ` ID : ${sessionId} `, {
-            backgroundColor: '#445069',
+          .text(0, 0, `${this.userId} `, {
+            backgroundColor: 'transparent',
             fontFamily: 'Tektur',
             color: '#F7E987',
             fontSize: '20px',
@@ -76,6 +78,7 @@ export class CharacterComponent {
           //내플레이어의 움직임은 update()부분에서 구현함
           entity.x = player.x;
           entity.y = player.y;
+          
         }
 
         // 움직임이 없을 때 애니메이션 중지
@@ -131,7 +134,7 @@ export class CharacterComponent {
         this.containerBody.setVelocityY(0);
       }
       // containerBody의 위치를 현재 플레이어의 위치로 업데이트
-      this.containerBody.x = this.currentPlayer.x-100;
+      this.containerBody.x = this.currentPlayer.x-60;
       this.containerBody.y = this.currentPlayer.y-60;
 
       // sessionID 캐릭터 옆에 표시
@@ -139,7 +142,7 @@ export class CharacterComponent {
       for (let sessionId in this.playerEntities) {
         if (sessionId !== this.room.sessionId) {
           let entity = this.playerEntities[sessionId];
-          entity.sessionIdText.setPosition(entity.x - 100, entity.y - 30);
+          entity.sessionIdText.setPosition(entity.x - 50, entity.y - 50);
         }
       }
 
