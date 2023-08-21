@@ -73,7 +73,7 @@ export class GameScene extends Phaser.Scene {
       this.characterComponent.initialize(this);
       this.machineComponent.initialize(this);
 
-      this.cameras.main.zoom = 1.2;
+      this.cameras.main.zoom = 1.5;
 
       const map = this.make.tilemap({ key: 'testmap' });
       const park = map.addTilesetImage(
@@ -126,7 +126,7 @@ export class GameScene extends Phaser.Scene {
           path_bg: 2,
           obstacles_collide_bg: 4,
           obstacles_collide: 5,
-          obstacles_not_collide: 6,
+          obstacles_not_collide: 21,
           chair: 7,
         };
 
