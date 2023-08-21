@@ -43,9 +43,11 @@ export class GameScene extends Phaser.Scene {
     this.load.image('speechBubble', png_bubble);
     this.load.image('park', png_park);
     this.load.tilemapTiledJSON('testmap', json_testmap);
+    
   }
 
   async create() {
+    
     // 채팅 컨테이너를 보이게 하는 코드를 추가합니다.
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
@@ -108,6 +110,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    
     if (this.keyboardComponent) {
       this.keyboardComponent.update();
     }
