@@ -9,7 +9,7 @@ import sun from '/public/background/sun.png';
 import toggle_on_icon from '/public/background/toggle_on_icon.png';
 import toggle_off_icon from '/public/background/toggle_off_icon.png';
 import start_button from '/public/background/start_button.png';
-import name_form from '/public/nameform.html'
+import name_form from '/public/nameform.html';
 
 export class StartScene extends Phaser.Scene {
   private cloud!: Phaser.Physics.Arcade.Group;
@@ -36,8 +36,9 @@ export class StartScene extends Phaser.Scene {
     this.load.html('nameform', name_form);
   }
   create() {
-
-    const element1 = this.add.dom(this.cameras.main.centerX, 380).createFromCache('nameform');
+    const element1 = this.add
+      .dom(this.cameras.main.centerX, 380)
+      .createFromCache('nameform');
 
     // // 저장 버튼 생성
     // const button = this.add.dom(1530, 380, 'button', 'font-size: 24px', 'Save');
@@ -47,15 +48,15 @@ export class StartScene extends Phaser.Scene {
     // button.on('click', () => {
     //     const userInput = input.node.value;
     //     this.playerId = userInput;
-        
+
     //     // 변수에 저장된 아이디 출력
     //     this.add.text(100, 100, 'Player ID: ' + this.playerId, { fontSize: '32px', fill: '#fff' });
-        
+
     //     // 입력 요소와 버튼 제거
     //     input.destroy();
     //     button.destroy();
     // });
-      
+
     // 채팅 컨테이너를 숨기는 코드를 추가합니다.
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
@@ -126,62 +127,62 @@ export class StartScene extends Phaser.Scene {
     // Move the description text down
     descriptionText.setY(300);
 
- // Toggle buttons for changing background
-const toggleBackdropButtonOn = this.add
-.image(this.cameras.main.width - 100, 50, 'toggle_on_icon')
-.setScrollFactor(0)
-.setInteractive();
+    // Toggle buttons for changing background
+    const toggleBackdropButtonOn = this.add
+      .image(this.cameras.main.width - 100, 50, 'toggle_on_icon')
+      .setScrollFactor(0)
+      .setInteractive();
 
-const toggleBackdropButtonOff = this.add
-.image(this.cameras.main.width - 50, 50, 'toggle_off_icon')
-.setScrollFactor(0)
-.setInteractive();
+    const toggleBackdropButtonOff = this.add
+      .image(this.cameras.main.width - 50, 50, 'toggle_off_icon')
+      .setScrollFactor(0)
+      .setInteractive();
 
-const toggleBackdrop = () => {
-  if (this.backdropKey === 'backdrop_day') {
-    this.backdropKey = 'backdrop_night';
-    this.cloudKey = 'cloud_night';
-  } else {
-    this.backdropKey = 'backdrop_day';
-    this.cloudKey = 'cloud_day';
-  }
-  this.changeBackground();
-  this.changeClouds();
+    const toggleBackdrop = () => {
+      if (this.backdropKey === 'backdrop_day') {
+        this.backdropKey = 'backdrop_night';
+        this.cloudKey = 'cloud_night';
+      } else {
+        this.backdropKey = 'backdrop_day';
+        this.cloudKey = 'cloud_day';
+      }
+      this.changeBackground();
+      this.changeClouds();
 
-  // 요소들을 앞으로 가져오기
-  this.children.bringToTop(element1);
-  this.children.bringToTop(titleText);
-  this.children.bringToTop(descriptionText);
-  this.children.bringToTop(startButton);
-  /*  this.children.bringToTop(loginButton); */
-  this.children.bringToTop(toggleBackdropButtonOn);
-  this.children.bringToTop(toggleBackdropButtonOff);
-}
-// Hover effect for the "toggle on" button
-toggleBackdropButtonOn.on('pointerover', () => {
-  toggleBackdropButtonOn.setScale(1.2); // 버튼 크기를 확대
-  this.input.setDefaultCursor('pointer');
-});
+      // 요소들을 앞으로 가져오기
+      this.children.bringToTop(element1);
+      this.children.bringToTop(titleText);
+      this.children.bringToTop(descriptionText);
+      this.children.bringToTop(startButton);
+      /*  this.children.bringToTop(loginButton); */
+      this.children.bringToTop(toggleBackdropButtonOn);
+      this.children.bringToTop(toggleBackdropButtonOff);
+    };
+    // Hover effect for the "toggle on" button
+    toggleBackdropButtonOn.on('pointerover', () => {
+      toggleBackdropButtonOn.setScale(1.2); // 버튼 크기를 확대
+      this.input.setDefaultCursor('pointer');
+    });
 
-toggleBackdropButtonOn.on('pointerout', () => {
-  toggleBackdropButtonOn.setScale(1); // 원래 크기로 복원
-  this.input.setDefaultCursor('auto');
-});
+    toggleBackdropButtonOn.on('pointerout', () => {
+      toggleBackdropButtonOn.setScale(1); // 원래 크기로 복원
+      this.input.setDefaultCursor('auto');
+    });
 
-toggleBackdropButtonOn.on('pointerdown', toggleBackdrop);
+    toggleBackdropButtonOn.on('pointerdown', toggleBackdrop);
 
-// Hover effect for the "toggle off" button
-toggleBackdropButtonOff.on('pointerover', () => {
-  toggleBackdropButtonOff.setScale(1.2); // 버튼 크기를 확대
-  this.input.setDefaultCursor('pointer');
-});
+    // Hover effect for the "toggle off" button
+    toggleBackdropButtonOff.on('pointerover', () => {
+      toggleBackdropButtonOff.setScale(1.2); // 버튼 크기를 확대
+      this.input.setDefaultCursor('pointer');
+    });
 
-toggleBackdropButtonOff.on('pointerout', () => {
-  toggleBackdropButtonOff.setScale(1); // 원래 크기로 복원
-  this.input.setDefaultCursor('auto');
-});
+    toggleBackdropButtonOff.on('pointerout', () => {
+      toggleBackdropButtonOff.setScale(1); // 원래 크기로 복원
+      this.input.setDefaultCursor('auto');
+    });
 
-toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
+    toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
 
     // 이미지로 대체된 startButton
     const startButton = this.add
@@ -204,19 +205,15 @@ toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
     });
 
     startButton.on('pointerdown', () => {
-      
       var inputElement = element1.node.querySelector('input');
 
       var inputValue = inputElement.value; // 입력된 값을 가져와 저장
 
-      if(inputValue){
-        
-        this.scene.start('game-scene',{ userInput: inputValue });
+      if (inputValue) {
+        this.scene.start('game-scene', { userInput: inputValue });
+      } else {
+        window.alert('아이디를 입력해주세요.');
       }
-      else{
-        window.alert("아이디를 입력해주세여");
-      }
-      
     });
 
     // Create an animation to move the startButton slightly
@@ -353,11 +350,11 @@ toggleBackdropButtonOff.on('pointerdown', toggleBackdrop);
 
     // Remove or hide moon image when changing to day backdrop
     const existingMoonImage = this.children.getByName('moonImage');
-    if (this.backdropKey === 'backdrop_day') {  
+    if (this.backdropKey === 'backdrop_day') {
       if (existingMoonImage) {
         existingMoonImage.destroy();
       }
-    } else { 
+    } else {
       // Add moon image when changing to night backdrop
       if (!existingMoonImage) {
         const moonImage = this.add
