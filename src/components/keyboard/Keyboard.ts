@@ -3,7 +3,7 @@ import { Room } from 'colyseus.js';
 
 export class KeyboardComponent {
   private room: Room;
-  private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
+  public cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private inputPayload = {
     left: false,
     right: false,

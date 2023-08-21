@@ -61,16 +61,55 @@ export const createAnimations = (anims: Phaser.Animations.AnimationManager) => {
       repeat: -1,
     });
 
+    anims.create({
+      key: 'sit_down',
+      frames: anims.generateFrameNames('character', {
+        prefix: 'Adam_sit_',
+        start: 1,
+        end: 1,
+        zeroPad: 0,
+        suffix: '.png',
+      }),
+      frameRate,
+      repeat: -1,
+    });
 
+    anims.create({
+      key: 'sit_left',
+      frames: anims.generateFrameNames('character', {
+        prefix: 'Adam_sit_',
+        start: 2,
+        end: 2,
+        zeroPad: 0,
+        suffix: '.png',
+      }),
+      frameRate,
+      repeat: -1,
+    });
 
+    anims.create({
+      key: 'sit_right',
+      frames: anims.generateFrameNames('character', {
+        prefix: 'Adam_sit_',
+        start: 3,
+        end: 3,
+        zeroPad: 0,
+        suffix: '.png',
+      }),
+      frameRate,
+      repeat: -1,
+    });
 
-
-
-
-
-
-
-
-
-
+    anims.create({
+      key: 'sit_up',
+      frames: anims.generateFrameNames('character', {
+        prefix: 'Adam_sit_',
+        start: 4,
+        end: 4,
+        zeroPad: 0,
+        suffix: '.png',
+      }),
+      frameRate,
+      repeat: -1,
+    });
 }

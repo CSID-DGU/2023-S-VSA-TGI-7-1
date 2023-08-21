@@ -97,13 +97,13 @@ export class CharacterComponent {
           entity.y = player.y;
         }
 
-        // 움직임이 없을 때 애니메이션 중지
-        if (player.velX === 0 && player.velY === 0) {
-          entity.anims.stop();
-        } else {
-          // 움직임이 있을 때만 애니메이션 실행
+        // // 움직임이 없을 때 애니메이션 중지
+        // if (player.velX === 0 && player.velY === 0) {
+        //   entity.anims.stop();
+        // } else {
+        //   // 움직임이 있을 때만 애니메이션 실행
           entity.anims.play(player.animeState, true);
-        }
+        // }
       });
     });
 
