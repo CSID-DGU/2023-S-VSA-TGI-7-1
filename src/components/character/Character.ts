@@ -12,7 +12,11 @@ export class CharacterComponent {
   public containerBody: Phaser.Physics.Arcade.Body;
   public userId: String;
 
-  constructor(room: Room, cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys, userId: String) {
+  constructor(
+    room: Room,
+    cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys,
+    userId: String
+  ) {
     this.room = room;
     this.cursorKeys = cursorKeys;
     this.userId = userId;
@@ -21,7 +25,7 @@ export class CharacterComponent {
   initialize(scene: Phaser.Scene) {
     this.room.state.players.onAdd((player, sessionId) => {
       console.log('A player has joined! Their unique session id is', sessionId);
-      
+
       var isCurrentPlayer = sessionId === this.room.sessionId;
 
       const entity = scene.physics.add.sprite(
@@ -33,6 +37,7 @@ export class CharacterComponent {
       this.playerEntities[sessionId] = entity;
       entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
+      entity.setDepth(9);
 
       if (isCurrentPlayer) {
         //현재플레이어가 내플레이어일경우 currentplayer에 저장함
@@ -40,7 +45,7 @@ export class CharacterComponent {
       }
       this.cameraScene = scene;
 
-      console.log("현재이름"+player.name);
+      console.log('현재이름' + player.name);
       // sessionID 캐릭터 옆에 표시
       if (sessionId !== this.room.sessionId) {
         const sessionIdText = scene.add
@@ -51,17 +56,16 @@ export class CharacterComponent {
             backgroundColor: '#F2EAD3',
           })
           .setDepth(4);
-          sessionIdText.setOrigin(0.5,0);
+        sessionIdText.setOrigin(0.5, 0);
 
-        if(sessionIdText.text==="null"){
-          setTimeout(()=>{
-            sessionIdText.text=player.name;
-          },1000)
+        if (sessionIdText.text === 'null') {
+          setTimeout(() => {
+            sessionIdText.text = player.name;
+          }, 1000);
         }
         entity.sessionIdText = sessionIdText;
-        
       } else {
-        const currentText = scene.add.container(entity.x , entity.y - 60);
+        const currentText = scene.add.container(entity.x, entity.y - 60);
         const sessionIdText = scene.add
           .text(0, 0, `${this.userId} `, {
             backgroundColor: 'transparent',
@@ -73,14 +77,15 @@ export class CharacterComponent {
             strokeThickness: 6, // 테두리 두께
           })
           .setDepth(4);
-          sessionIdText.setOrigin(0.5,0);
+        sessionIdText.setOrigin(0.5, 0);
         this.currentPlayer.sessionIdText = sessionIdText;
         currentText.add(sessionIdText);
         scene.physics.world.enable(currentText);
         this.containerBody = currentText.body as Phaser.Physics.Arcade.Body;
+        currentText.setDepth(10);
       }
 
-      console.log("현재이름"+player.name);
+      console.log('현재이름' + player.name);
       player.onChange(() => {
         //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
 
@@ -89,7 +94,6 @@ export class CharacterComponent {
           //내플레이어의 움직임은 update()부분에서 구현함
           entity.x = player.x;
           entity.y = player.y;
-          
         }
 
         // 움직임이 없을 때 애니메이션 중지
@@ -146,7 +150,7 @@ export class CharacterComponent {
       }
       // containerBody의 위치를 현재 플레이어의 위치로 업데이트
       this.containerBody.x = this.currentPlayer.x;
-      this.containerBody.y = this.currentPlayer.y-60;
+      this.containerBody.y = this.currentPlayer.y - 60;
 
       // sessionID 캐릭터 옆에 표시
 

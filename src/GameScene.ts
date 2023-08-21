@@ -25,8 +25,8 @@ export class GameScene extends Phaser.Scene {
   public obstacles_collide_bg: Phaser.Tilemaps.TilemapLayer;
   public gd_object_layer: Phaser.Tilemaps.TilemapLayer;
   public userId: string;
-  
-  init (data){
+
+  init(data) {
     this.userId = data.userInput;
   }
 
@@ -43,20 +43,18 @@ export class GameScene extends Phaser.Scene {
     this.load.image('speechBubble', png_bubble);
     this.load.image('park', png_park);
     this.load.tilemapTiledJSON('testmap', json_testmap);
-    
   }
 
   async create() {
-    
     // 채팅 컨테이너를 보이게 하는 코드를 추가합니다.
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
       chatContainer.style.display = 'block';
     }
-  try {
-    this.room = await this.client.joinOrCreate('my_room');
-    this.room.send(2, { name:this.userId });
-    console.log('Joined successfully!');
+    try {
+      this.room = await this.client.joinOrCreate('my_room');
+      this.room.send(2, { name: this.userId });
+      console.log('Joined successfully!');
       createAnimations(this.anims);
 
       this.machineComponent = new MachineComponent(this.room);
@@ -104,13 +102,42 @@ export class GameScene extends Phaser.Scene {
       this.obstacles_collide.setCollisionByProperty({ collides: true });
       this.obstacles_collide_bg.setCollisionByProperty({ collides: true });
       this.chair.setCollisionByProperty({ collides: true });
+      this.chair.setDepth(7);
+
+      const layers = [
+        path_bg,
+        path_fg,
+        ground,
+        obstacles_not_collide,
+        this.obstacles_collide_bg,
+        this.obstacles_collide,
+      ];
+
+      layers.forEach((layer) => {
+        const layerDepth = getLayerDepth(layer);
+        layer.setDepth(layerDepth);
+        console.log(`Layer '${layer.layer.name}' depth: ${layerDepth}`);
+      });
+
+      function getLayerDepth(layer) {
+        const layerDepthMap = {
+          ground: 1,
+          path_fg: 3,
+          path_bg: 2,
+          obstacles_collide_bg: 4,
+          obstacles_collide: 5,
+          obstacles_not_collide: 6,
+          chair: 7,
+        };
+
+        return layerDepthMap[layer.layer.name] || 0;
+      }
     } catch (e) {
       console.error(e);
     }
   }
 
   update(time: number, delta: number): void {
-    
     if (this.keyboardComponent) {
       this.keyboardComponent.update();
     }
