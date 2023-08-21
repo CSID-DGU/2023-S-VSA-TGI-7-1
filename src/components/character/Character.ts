@@ -21,7 +21,7 @@ export class CharacterComponent {
   initialize(scene: Phaser.Scene) {
     this.room.state.players.onAdd((player, sessionId) => {
       console.log('A player has joined! Their unique session id is', sessionId);
-      this.room.send(2, { name:this.userId });
+      
       var isCurrentPlayer = sessionId === this.room.sessionId;
 
       const entity = scene.physics.add.sprite(
@@ -39,6 +39,7 @@ export class CharacterComponent {
         this.currentPlayer = entity;
       }
       this.cameraScene = scene;
+
       console.log("현재이름"+player.name);
       // sessionID 캐릭터 옆에 표시
       if (sessionId !== this.room.sessionId) {
@@ -51,7 +52,14 @@ export class CharacterComponent {
           })
           .setDepth(4);
           sessionIdText.setOrigin(0.5,0);
+
+        if(sessionIdText.text==="null"){
+          setTimeout(()=>{
+            sessionIdText.text=player.name;
+          },1000)
+        }
         entity.sessionIdText = sessionIdText;
+        
       } else {
         const currentText = scene.add.container(entity.x , entity.y - 60);
         const sessionIdText = scene.add
