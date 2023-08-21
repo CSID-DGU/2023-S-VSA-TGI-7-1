@@ -58,11 +58,12 @@ export class CharacterComponent {
           .setDepth(4);
         sessionIdText.setOrigin(0.5, 0);
 
-        if (sessionIdText.text === 'null') {
+       
+          console.log("이것이실행됨");
           setTimeout(() => {
             sessionIdText.text = player.name;
           }, 1000);
-        }
+        
         entity.sessionIdText = sessionIdText;
       } else {
         const currentText = scene.add.container(entity.x, entity.y - 60);
