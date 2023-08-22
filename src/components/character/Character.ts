@@ -47,15 +47,13 @@ export class CharacterComponent {
         'Adam_idle_anim_21.png'
       );
       this.playerEntities[sessionId] = entity;
+      entity.setDepth(9);
 
       if(!player.animeState){
         entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
-      entity.setDepth(9);
       entity.anims.play(player.animeState, true);
       }else{
-
-        entity.setDepth(9);
         entity.anims.play(player.animeState, true);
       }
 
@@ -79,10 +77,10 @@ export class CharacterComponent {
             fontFamily: 'Tektur',
             backgroundColor: '#F2EAD3',
           })
-          .setDepth(4);
+          .setDepth(10);
         sessionIdText.setOrigin(0.5, 0);
 
-        console.log('이것이실행됨');
+        
         setTimeout(() => {
           sessionIdText.text = player.name;
         }, 1000);
