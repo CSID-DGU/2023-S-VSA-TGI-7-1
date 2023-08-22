@@ -50,10 +50,12 @@ export class CharacterComponent {
       if (sessionId !== this.room.sessionId) {
         const sessionIdText = scene.add
           .text(entity.x - 60, entity.y - 60, `${player.name} `, {
-            color: '#3F2305',
+            backgroundColor: 'transparent',
+            color: 'white',
             fontSize: '17px',
             fontFamily: 'Tektur',
-            backgroundColor: '#F2EAD3',
+            stroke: '#3F2305', // 테두리 색상
+            strokeThickness: 2, // 테두리 두께
           })
           .setDepth(4);
         sessionIdText.setOrigin(0.5, 0);
@@ -75,7 +77,7 @@ export class CharacterComponent {
             fontSize: '20px',
             padding: { y: 2 },
             stroke: '#000', // 테두리 색상
-            strokeThickness: 6, // 테두리 두께
+            strokeThickness: 4, // 테두리 두께
           })
           .setDepth(4);
         sessionIdText.setOrigin(0.5, 0);
