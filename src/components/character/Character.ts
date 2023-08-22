@@ -15,11 +15,23 @@ export class CharacterComponent {
   constructor(
     room: Room,
     cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys,
-    userId: String
+    userId: string
   ) {
     this.room = room;
     this.cursorKeys = cursorKeys;
     this.userId = userId;
+
+    this.room.state.players.onRemove((player, sessionId) => {
+      const entity = this.playerEntities[sessionId];
+      if (entity) {
+        entity.destroy();
+        delete this.playerEntities[sessionId];
+        const sessionIdText = entity.sessionIdText;
+        if (sessionIdText) {
+          sessionIdText.destroy();
+        }
+      }
+    });
   }
 
   initialize(scene: Phaser.Scene) {
@@ -38,34 +50,35 @@ export class CharacterComponent {
       entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
       entity.setDepth(9);
-
+      
       if (isCurrentPlayer) {
-        //현재플레이어가 내플레이어일경우 currentplayer에 저장함
         this.currentPlayer = entity;
+        //현재플레이어가 내플레이어일경우 currentplayer에 저장함
+          setTimeout(() => {
+          const joined = player.name+"님이 입장했습니다"
+          console.log(joined);
+          this.room.send(3, { joined: joined });
+        }, 1000);
       }
       this.cameraScene = scene;
 
-      console.log('현재이름' + player.name);
       // sessionID 캐릭터 옆에 표시
       if (sessionId !== this.room.sessionId) {
         const sessionIdText = scene.add
           .text(entity.x - 60, entity.y - 60, `${player.name} `, {
-            backgroundColor: 'transparent',
-            color: 'white',
+            color: '#3F2305',
             fontSize: '17px',
             fontFamily: 'Tektur',
-            stroke: '#3F2305', // 테두리 색상
-            strokeThickness: 2, // 테두리 두께
+            backgroundColor: '#F2EAD3',
           })
           .setDepth(4);
         sessionIdText.setOrigin(0.5, 0);
 
-       
-          console.log("이것이실행됨");
-          setTimeout(() => {
-            sessionIdText.text = player.name;
-          }, 1000);
-        
+        console.log('이것이실행됨');
+        setTimeout(() => {
+          sessionIdText.text = player.name;
+        }, 1000);
+
         entity.sessionIdText = sessionIdText;
       } else {
         const currentText = scene.add.container(entity.x, entity.y - 60);
@@ -77,7 +90,7 @@ export class CharacterComponent {
             fontSize: '20px',
             padding: { y: 2 },
             stroke: '#000', // 테두리 색상
-            strokeThickness: 4, // 테두리 두께
+            strokeThickness: 6, // 테두리 두께
           })
           .setDepth(4);
         sessionIdText.setOrigin(0.5, 0);
@@ -88,7 +101,8 @@ export class CharacterComponent {
         currentText.setDepth(10);
       }
 
-      console.log('현재이름' + player.name);
+      console.log(player.name);
+
       player.onChange(() => {
         //서버에서 player.x player.y등의 값이 변경될때마다 player.onChange가 호출됨
 
@@ -104,7 +118,7 @@ export class CharacterComponent {
         //   entity.anims.stop();
         // } else {
         //   // 움직임이 있을 때만 애니메이션 실행
-          entity.anims.play(player.animeState, true);
+        entity.anims.play(player.animeState, true);
         // }
       });
     });

@@ -76,6 +76,19 @@ export class ChatComponent {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     });
 
+    this.room.onMessage('joined', (message) => {
+      this.chatMessages.push(`server : ${message.joined}`);
+      this.updateChatText(chatContainer);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+
+       
+    this.room.onMessage('left', (message) => {
+      this.chatMessages.push(`server : ${message.left}`);
+      this.updateChatText(chatContainer);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+
     this.chatMode = false;
 
     window.addEventListener('keydown', (event: KeyboardEvent) => {
