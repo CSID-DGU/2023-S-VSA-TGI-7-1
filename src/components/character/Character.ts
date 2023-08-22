@@ -47,10 +47,18 @@ export class CharacterComponent {
         'Adam_idle_anim_21.png'
       );
       this.playerEntities[sessionId] = entity;
-      entity.anims.play('idle_down', true);
+
+      if(!player.animeState){
+        entity.anims.play('idle_down', true);
       player.animeState = 'idle_down';
       entity.setDepth(9);
-      
+      entity.anims.play(player.animeState, true);
+      }else{
+
+        entity.setDepth(9);
+        entity.anims.play(player.animeState, true);
+      }
+
       if (isCurrentPlayer) {
         this.currentPlayer = entity;
         //현재플레이어가 내플레이어일경우 currentplayer에 저장함
