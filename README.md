@@ -1,29 +1,75 @@
-# Webtaverse_Client
-Webtaverse_Client
-Tag Name: Description
-----------------------
-Feat:	새로운 기능을 추가
+<style>
 
-Fix: 버그 수정
 
-Design: CSS 등 사용자 UI 디자인 변경
+  img {
+    width : 500px;
+    height : 250px;
+  }
 
-!BREAKING CHANGE: 커다란 API 변경의 경우
+  .chatimg {
+    display: block;
+    width : 400px;
+    height : 500px;
+  }
 
-!HOTFIX: 급하게 치명적인 버그를 고쳐야하는 경우
+  .subtitle {
+    font-size : 25px
+  }
 
-Style: 코드 포맷 변경, 세미 콜론 누락, 코드 수정이 없는 경우
+</style>
 
-Refactor: 프로덕션 코드 리팩토링
+# TGI Webtaverse
 
-Comment: 필요한 주석 추가 및 변경
+- <span class="subtitle">Start Page</span>
 
-Docs: 문서 수정
+<img src='./img/landingpage.png' />
 
-Test: 테스트 코드, 리펙토링 테스트 코드 추가, Production Code(실제로 사용하는 코드) 변경 없음
+&nbsp;
 
-Chore: 빌드 업무 수정, 패키지 매니저 수정, 패키지 관리자 구성 등 업데이트, Production Code 변경 없음
+---
 
-Rename: 파일 혹은 폴더명을 수정하거나 옮기는 작업만인 경우
+- <span class="subtitle">Interection</span>
 
-Remove: 파일을 삭제하는 작업만 수행한 경우
+<img src='./img/bench.png'>
+
+&nbsp;
+
+---
+
+- <span class="subtitle">Text Chat</span>
+
+<img class="chatimg" src='./img/chat.png'>
+
+## Built with
+
+- Phaser3
+- Colyseus
+- Typescript
+
+## Controls
+
+- Arrow keys to move
+
+- E to sit down
+
+- Enter to open & close chat
+
+## Prerequisites
+
+- You'll need [Node.js](https://nodejs.org/en), [npm](https://www.npmjs.com/) installed.
+
+## Getting Started
+
+### Clone this repository to your local machine:
+
+```
+git clone https://github.com/T-G-I-Web/Webtaverse_Client.git
+```
+
+### To start a server, go into the project folder and install dependencies/run start command:
+
+```
+cd Webtaverse_Client or 'my-folder-name/client'
+
+npm install && npm start
+```
