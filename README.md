@@ -1,23 +1,3 @@
-<style>
-
-
-  img {
-    width : 500px;
-    height : 250px;
-  }
-
-  .chatimg {
-    display: block;
-    width : 400px;
-    height : 500px;
-  }
-
-  .subtitle {
-    font-size : 25px
-  }
-
-</style>
-
 # TGI Webtaverse
 
 - <span class="subtitle">Start Page</span>
