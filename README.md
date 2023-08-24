@@ -8,7 +8,7 @@
 
 ---
 
-- <span class="subtitle">Interection</span>
+- <span class="subtitle">Interaction</span>
 
 <img src='./img/bench.png'>
 
