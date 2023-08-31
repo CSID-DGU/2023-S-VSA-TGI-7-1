@@ -13,7 +13,6 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.ScaleModes.RESIZE,
     width: window.innerWidth,
     height: window.innerHeight,
-
   },
   backgroundColor: "#343a40",
   parent: "phaser-example",
